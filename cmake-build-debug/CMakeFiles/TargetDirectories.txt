@@ -1,0 +1,4 @@
+/home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/start.dir
+/home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/lb.dir

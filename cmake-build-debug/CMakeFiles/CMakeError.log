@@ -1,0 +1,103 @@
+Determining if the function sgemm_ exists failed with the following output:
+Change Dir: /home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/anreydron/clion-2021.3.3/bin/ninja/linux/ninja cmTC_16dc5 && [1/2] Building C object CMakeFiles/cmTC_16dc5.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_16dc5
+FAILED: cmTC_16dc5 
+: && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=sgemm_  CMakeFiles/cmTC_16dc5.dir/CheckFunctionExists.c.o -o cmTC_16dc5   && :
+CMakeFiles/cmTC_16dc5.dir/CheckFunctionExists.c.o: In function `main':
+CheckFunctionExists.c:(.text+0x10): undefined reference to `sgemm_'
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/anreydron/clion-2021.3.3/bin/ninja/linux/ninja cmTC_659d9 && [1/2] Building C object CMakeFiles/cmTC_659d9.dir/src.c.o
+[2/2] Linking C executable cmTC_659d9
+FAILED: cmTC_659d9 
+: && /usr/bin/cc   CMakeFiles/cmTC_659d9.dir/src.c.o -o cmTC_659d9   && :
+CMakeFiles/cmTC_659d9.dir/src.c.o: In function `main':
+src.c:(.text+0x3e): undefined reference to `pthread_create'
+src.c:(.text+0x4a): undefined reference to `pthread_detach'
+src.c:(.text+0x56): undefined reference to `pthread_cancel'
+src.c:(.text+0x67): undefined reference to `pthread_join'
+src.c:(.text+0x7b): undefined reference to `pthread_atfork'
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/anreydron/clion-2021.3.3/bin/ninja/linux/ninja cmTC_f4bae && [1/2] Building C object CMakeFiles/cmTC_f4bae.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_f4bae
+FAILED: cmTC_f4bae 
+: && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=pthread_create  CMakeFiles/cmTC_f4bae.dir/CheckFunctionExists.c.o -o cmTC_f4bae  -lpthreads && :
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function cheev_ exists failed with the following output:
+Change Dir: /home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/anreydron/clion-2021.3.3/bin/ninja/linux/ninja cmTC_f5589 && [1/2] Building C object CMakeFiles/cmTC_f5589.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_f5589
+FAILED: cmTC_f5589 
+: && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=cheev_  CMakeFiles/cmTC_f5589.dir/CheckFunctionExists.c.o -o cmTC_f5589  /usr/lib/x86_64-linux-gnu/libblas.so  /usr/lib/x86_64-linux-gnu/libf77blas.so  /usr/lib/x86_64-linux-gnu/libatlas.so  -lpthread  -lm  -ldl && :
+CMakeFiles/cmTC_f5589.dir/CheckFunctionExists.c.o: In function `main':
+CheckFunctionExists.c:(.text+0x10): undefined reference to `cheev_'
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function cheev_ exists failed with the following output:
+Change Dir: /home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/anreydron/clion-2021.3.3/bin/ninja/linux/ninja cmTC_1ba0f && [1/2] Building C object CMakeFiles/cmTC_1ba0f.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_1ba0f
+FAILED: cmTC_1ba0f 
+: && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=cheev_  CMakeFiles/cmTC_1ba0f.dir/CheckFunctionExists.c.o -o cmTC_1ba0f  -SSL2  /usr/lib/x86_64-linux-gnu/libblas.so  /usr/lib/x86_64-linux-gnu/libf77blas.so  /usr/lib/x86_64-linux-gnu/libatlas.so && :
+cc: error: unrecognized command line option ‘-SSL2’
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function cheev_ exists failed with the following output:
+Change Dir: /home/anreydron/CLionProjects/start/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/anreydron/clion-2021.3.3/bin/ninja/linux/ninja cmTC_389fe && [1/2] Building C object CMakeFiles/cmTC_389fe.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_389fe
+FAILED: cmTC_389fe 
+: && /usr/bin/cc -DCHECK_FUNCTION_EXISTS=cheev_  CMakeFiles/cmTC_389fe.dir/CheckFunctionExists.c.o -o cmTC_389fe  /usr/lib/x86_64-linux-gnu/liblapack.so  /usr/lib/x86_64-linux-gnu/libblas.so  /usr/lib/x86_64-linux-gnu/libf77blas.so  /usr/lib/x86_64-linux-gnu/libatlas.so  -fortranlibs && :
+cc: error: unrecognized command line option ‘-fortranlibs’; did you mean ‘-fltrans’?
+ninja: build stopped: subcommand failed.
+
+
+
