@@ -1,10 +1,4 @@
-//
-// Created by anreydron on 22.10.2022.
-//
-
-#ifndef START__LIB_H
-#define START__LIB_H
-
+#pragma once
 #include <iostream>
 #include <cmath>
 #include <fstream>
@@ -70,9 +64,9 @@ struct SnavelyReprojectionError {
 		for (int i = 9; i < 12; ++i)
 			t[i - 9] = Rt[i];
 
-		P[0] = R[0] * point3d[0] + R[1] * point3d[1] + R[2] * point3d[2] + t[0];
-		P[1] = R[3] * point3d[0] + R[4] * point3d[1] + R[5] * point3d[2] + t[1];
-		P[2] = R[6] * point3d[0] + R[7] * point3d[1] + R[8] * point3d[2] + t[2];
+		P[0] = R[0] * (point3d[0] + t[0]) + R[1] * (point3d[1] + t[1]) + R[2] * (point3d[2] + t[2]);
+		P[1] = R[3] * (point3d[0] + t[0]) + R[4] * (point3d[1] + t[1]) + R[5] * (point3d[2] + t[2]);
+		P[2] = R[6] * (point3d[0] + t[0]) + R[7] * (point3d[1] + t[1]) + R[8] * (point3d[2] + t[2]);
 
 		P[0] /= P[2];
 		P[1] /= P[2];
@@ -141,18 +135,20 @@ KeyPointMatches AlignImages(Mat& im1, Mat& im2); // find features
 CameraInfo Decompose(Mat proj_matrix); // decompose given P matrix of a camera
 
 Mat CalculateDisparity(const cv::Mat& left_image, const cv::Mat& right_image);
-Mat TAP(const Mat& R, const Mat& t);
+Mat TAP(const Mat& R, const Mat& t); 
 Mat T(Mat& R, Mat& t);
 
 pair<Mat, Mat> EstimateMotion(Mat left, Mat right, Mat next, Mat P_left, Mat P_right);
+pair<Mat, Mat> EstimateNoDynamicMotion(Mat left, Mat right, Mat next, Mat left_segment, Mat P_left, Mat P_right, std::vector<int> dynamic);
 std::vector<std::vector<KeyPoint>> GetSamePoints(fs::directory_iterator left, fs::directory_iterator next, const int& N_features);
 std::vector<double> Transform_vec(const Mat answer);
 
 void VisualOdometry(const std::string& left_path, const std::string& right_path, const std::string& input, const Mat& PLeft, const Mat& PRight);
 void EstimateAndOptimize(const std::string& left_path, const std::string& right_path, const std::string& input, const Mat& PLeft, const Mat& PRight);
+void VisualNoDynamic(const std::string& left_path, const std::string& left_path_segment,  const std::string& right_path, const std::string& input, 
+	const Mat& PLeft, const Mat& PRight, std::vector<int> dynamic);
 
 /*bool operator != (KeyPoint kp1, KeyPoint kp2) {
 	return !(kp1.pt.x == kp2.pt.x && kp1.pt.y == kp2.pt.y);
 }
 bool operator == (KeyPoint kp1, KeyPoint kp2) { return !(kp1 != kp2); }*/
-#endif //START__LIB_H
