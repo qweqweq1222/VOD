@@ -1,32 +1,34 @@
 #pragma once
-#include <iostream>
-#include <cmath>
-#include <fstream>
-#include<opencv2/core.hpp>
-#include<opencv2/highgui.hpp>
-#include<opencv2/calib3d.hpp>
-#include<opencv2/imgproc.hpp>
-#include <opencv2/videoio.hpp>
+
+#include <ceres/ceres.h>
+#include <opencv2/calib3d.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/features2d.hpp>
+#include <opencv2/flann.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv2/video.hpp>
-#include "opencv2/features2d.hpp"
-#include "opencv2/flann.hpp"
-#include <experimental/filesystem>
+#include <opencv2/videoio.hpp>
+
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <ceres/ceres.h>
 
 namespace fs = std::filesystem;
 using namespace cv;
 using namespace std;
 
-const int MAX_FEATURES = 500;
-const int MIN_FEATURES = 10;
-const float GOOD_MATCH_PERCENT = 0.5f;
-const float DEPTH_TRASH = 3000.0f;
-const int SAME_POINTS = 15;
-const int NUM_OF_FRAMES = 500;
-const int LOCAL_TRASH = 2;
-const int START_KEY_FRAME = 0;
+constexpr int MAX_FEATURES = 500;
+constexpr int MIN_FEATURES = 10;
+constexpr float GOOD_MATCH_PERCENT = 0.5f;
+constexpr float DEPTH_TRASH = 3000.0f;
+constexpr int SAME_POINTS = 15;
+constexpr int NUM_OF_FRAMES = 500;
+constexpr int LOCAL_TRASH = 2;
+constexpr int START_KEY_FRAME = 0;
 
 struct LeastSquareSolver {
 	LeastSquareSolver(double a, double b, double c) : a(a), b(b), c(c) {};
@@ -96,21 +98,19 @@ struct KeyPointMatches
 
 	KeyPointMatches(vector<DMatch> matches_, vector<KeyPoint> kp1_,
 		vector<KeyPoint> kp2_) :matches(matches_), kp1(kp1_), kp2(kp2_) {};
-	~KeyPointMatches() = default;
 };
 struct CameraInfo
 {
 	Mat cameraMatrix, rotMatrix, transVector;
 	CameraInfo(Mat camera_matrix, Mat rot_matrix, Mat trans_vector) {
-		camera_matrix.convertTo(camera_matrix, CV_32F, 1.0);
-		rot_matrix.convertTo(rot_matrix, CV_32F, 1.0);
-		trans_vector.convertTo(trans_vector, CV_32F, 1.0);
+		camera_matrix.convertTo(camera_matrix, CV_32F);
+		rot_matrix.convertTo(rot_matrix, CV_32F);
+		trans_vector.convertTo(trans_vector, CV_32F);
 
 		cameraMatrix = camera_matrix;
 		rotMatrix = rot_matrix;
 		transVector = trans_vector;
 	};
-	~CameraInfo() = default;
 
 };
 struct ForOptimize
@@ -121,14 +121,13 @@ struct ForOptimize
 
 	ForOptimize(Mat R_, Mat t_, vector<Point3f>& pts3d, vector<Point2f>& pts2d)
 	{
-		R_.convertTo(R_, CV_32F, 1.0);
-		t_.convertTo(t_, CV_32F, 1.0);
+		R_.convertTo(R_, CV_32F);
+		t_.convertTo(t_, CV_32F);
 		R = R_;
 		t = t_;
 		pts_3d = pts3d;
 		pts_2d = pts2d;
 	}
-	~ForOptimize() = default;
 };
 
 KeyPointMatches AlignImages(Mat& im1, Mat& im2); // find features
