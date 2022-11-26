@@ -1,6 +1,18 @@
 #include "lib.h"
 
-void EstimateAndOptimize(const std::string& left_path, const std::string& right_path, const std::string& input, const Mat& PLeft, const Mat& PRight)
+
+Mat FromPointerToMat(double* pt)
+{
+	Mat T = Mat::eye(4, 4, CV_32F);
+	for (int i = 0; i < 3; ++i)
+		for (int j = 0; j < 3; ++j)
+			T.at<float>(i, j) = pt[3 * i + j];
+	T.at<float>(0, 3) = pt[9];
+	T.at<float>(1, 3) = pt[10];
+	T.at<float>(1, 3) = pt[11];
+	return T;
+}
+void EstimateAndOptimize(const std::string& left_path, const std::string& right_path, const std::string& input, const Mat& PLeft, const Mat& PRight) 
 {
 	float GX = 0, GY = 0, GZ = 0;
 	CameraInfo cil = Decompose(PLeft);
@@ -72,21 +84,19 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 			P *= L.inv();
 			Tanpa.push_back(P);
 			GLOBAL_P *= L.inv();
-			std::vector<double> vector = Transform_vec(P);
+			Mat GLOBAL_P_INV = GLOBAL_P.inv();
+			std::vector<double> vector = Transform_vec(GLOBAL_P_INV);
 			T_i.push_back(vector);
 		}
 		ceres::Problem problem;
 		std::vector<double*> crt(T_i.size());
-		std::cout << "MATRIX:\n";
 		for (int i = 0; i < T_i.size(); ++i)
 		{
 			crt[i] = new double[12];
 			for (int j = 0; j < 12; ++j)
 				crt[i][j] = double(T_i[i][j]);
-			cout << std::endl;
 		}
 		std::vector<double*> pts_3d(pts3d.size());
-		std::cout << "DOTS:\n";
 		for (int i = 0; i < pts3d.size(); ++i)
 		{
 			pts_3d[i] = new double[3];
@@ -100,7 +110,7 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 			for (int j = 0; j < pts3d.size(); ++j)
 			{
 				ceres::CostFunction* cost_function =
-					SnavelyReprojectionError::Create(double(vec[0][j].pt.x), double(vec[0][j].pt.y),
+					SnavelyReprojectionError::Create(double(vec[i + 1][j].pt.x), double(vec[i + 1][j].pt.y),
 						PLeft.at<float>(0,0), PLeft.at<float>(0, 0), PLeft.at<float>(0, 2), PLeft.at<float>(1, 2));
 				problem.AddResidualBlock(cost_function, nullptr, crt[i], pts_3d[j]);
 				for (int idx = 0; idx < 9; ++idx)
@@ -133,13 +143,19 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 		options.minimizer_progress_to_stdout = true;
 		ceres::Solver::Summary summary;
 		ceres::Solve(options, &problem, &summary);
-
 		for (int i = 0; i < crt.size(); ++i)
-			in << crt[i][9] + GX << " " << crt[i][10] + GY << " " << crt[i][11] + GZ << "\n";
+		{
+			Mat ofi = FromPointerToMat(crt[i]);
+			ofi = ofi.inv();
+			in << ofi.at<float>(0,3) + GX << " " << ofi.at<float>(1, 3) + GY << " " << ofi.at<float>(2, 3) + GZ << "\n";
+			if (i == crt.size() - 1)
+			{
+				GX += ofi.at<float>(0,3);
+				GY += ofi.at<float>(1, 3);
+				GZ += ofi.at<float>(2, 3);
+			}
+		}
 
-		GX += float(crt[crt.size() - 1][9]);
-		GY += float(crt[crt.size() - 1][10]);
-		GZ += float(crt[crt.size() - 1][11]);
 		std::cout << GZ << std::endl;
 
 		for (auto& p : crt)
