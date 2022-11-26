@@ -142,7 +142,7 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 			Mat copy_GLOBAL = GLOBAL_P.clone();
 			copy_GLOBAL *= FromPointerToMat(crt[i]).inv();
 			in << copy_GLOBAL.at<float>(0, 3) << " " << copy_GLOBAL.at<float>(1, 3) << " " << copy_GLOBAL.at<float>(2, 3) << "\n";
-			if (i = crt.size() - 1)
+			if (i == crt.size() - 1)
 				GLOBAL_P *= FromPointerToMat(crt[i]).inv();
 		}
 
