@@ -1,4 +1,5 @@
 #include "lib.h"
+#include <iostream>
 
 KeyPointMatches AlignImages(Mat& im1, Mat& im2) {
 	Mat im1Gray, im2Gray, descriptors1, descriptors2;
@@ -123,8 +124,8 @@ Mat TAP(const Mat& R, const Mat& t)
 std::vector<std::vector<KeyPoint>> GetSamePoints(fs::directory_iterator left, fs::directory_iterator next, const int& N_features)
 {
 
-	Mat l = imread((*left).path().u8string());
-	Mat n = imread((*next).path().u8string());
+	Mat l = imread((*left).path().string());
+	Mat n = imread((*next).path().string());
 
 	std::vector<std::vector<KeyPoint>> final_res;
 
@@ -144,8 +145,8 @@ std::vector<std::vector<KeyPoint>> GetSamePoints(fs::directory_iterator left, fs
 
 	while (final_res[0].size() >= N_features)
 	{
-		l = imread((*left).path().u8string());
-		n = imread((*next).path().u8string());
+		l = imread((*left).path().string());
+		n = imread((*next).path().string());
 
 		KeyPointMatches buffer = AlignImages(l, n);
 		std::vector<KeyPoint> adder;
@@ -232,9 +233,9 @@ void VisualOdometry(const std::string& left_path, const std::string& right_path,
 
 	for (int i = 0; i < NUM_OF_FRAMES; ++i)
 	{
-		pair<Mat, Mat> TR = EstimateMotion(imread((*left_iterator).path().u8string()),
-			imread((*right_iterator).path().u8string()),
-			imread((*next_iterator).path().u8string()), PLeft, PRight);
+		pair<Mat, Mat> TR = EstimateMotion(imread((*left_iterator).path().string()),
+			imread((*right_iterator).path().string()),
+			imread((*next_iterator).path().string()), PLeft, PRight);
 		TR.first.convertTo(TR.first, CV_32F);
 		TR.second.convertTo(TR.second, CV_32F);
 		Mat R, t;
@@ -246,9 +247,9 @@ void VisualOdometry(const std::string& left_path, const std::string& right_path,
 		++left_iterator;
 		++right_iterator;
 		++next_iterator;
-		std::cout << *left_iterator << std::endl;
-		std::cout << *right_iterator << std::endl;
-		std::cout << *next_iterator << std::endl << "___________________________________\n";
+		std::cout << left_iterator->path() << std::endl;
+		std::cout << right_iterator->path() << std::endl;
+		std::cout << next_iterator->path() << std::endl << "___________________________________\n";
 		in << GLOBAL_P.at<float>(0, 3) << " " << GLOBAL_P.at<float>(1, 3) << " " << GLOBAL_P.at<float>(2, 3) << std::endl;
 	}
 }
@@ -271,11 +272,11 @@ void VisualNoDynamic(const std::string& left_path, const std::string& left_path_
 
 	for (int i = 0; i < NUM_OF_FRAMES; ++i)
 	{
-		Mat left_segment = imread((*segment_iterator).path().u8string());
+		Mat left_segment = imread((*segment_iterator).path().string());
 		left_segment.convertTo(left_segment, CV_8U);
-		pair<Mat, Mat> TR = EstimateNoDynamicMotion(imread((*left_iterator).path().u8string()),
-			imread((*right_iterator).path().u8string()),
-			imread((*next_iterator).path().u8string()), left_segment, PLeft, PRight, dynamic);
+		pair<Mat, Mat> TR = EstimateNoDynamicMotion(imread((*left_iterator).path().string()),
+			imread((*right_iterator).path().string()),
+			imread((*next_iterator).path().string()), left_segment, PLeft, PRight, dynamic);
 		TR.first.convertTo(TR.first, CV_32F);
 		TR.second.convertTo(TR.second, CV_32F);
 		Mat R, t;
@@ -288,9 +289,9 @@ void VisualNoDynamic(const std::string& left_path, const std::string& left_path_
 		++right_iterator;
 		++next_iterator;
 		++segment_iterator;
-		std::cout << *left_iterator << std::endl;
-		std::cout << *right_iterator << std::endl;
-		std::cout << *next_iterator << std::endl << "___________________________________\n";
+		std::cout << left_iterator->path() << std::endl;
+		std::cout << right_iterator->path() << std::endl;
+		std::cout << next_iterator->path() << std::endl << "___________________________________\n";
 		in << GLOBAL_P.at<float>(0, 3) << " " << GLOBAL_P.at<float>(1, 3) << " " << GLOBAL_P.at<float>(2, 3) << std::endl;
 	}
 }
