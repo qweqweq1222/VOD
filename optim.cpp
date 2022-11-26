@@ -14,7 +14,6 @@ Mat FromPointerToMat(double* pt)
 }
 void EstimateAndOptimize(const std::string& left_path, const std::string& right_path, const std::string& input, const Mat& PLeft, const Mat& PRight) 
 {
-	float GX = 0, GY = 0, GZ = 0;
 	CameraInfo cil = Decompose(PLeft);
 	CameraInfo cir = Decompose(PRight);
 	fs::directory_iterator left_iterator(left_path);
@@ -43,7 +42,6 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 		counter += vec.size();
 		buffer = vec.size();
 		std::vector<Point3f> pts3d;
-		std::vector<Mat> Tanpa;
 
 		Mat P = Mat::eye(4, 4, CV_32F);
 		for (int jdx = 0; jdx < vec.size() - 1; ++jdx)
@@ -82,10 +80,7 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 			buffer.second.convertTo(buffer.second, CV_32F);
 			Mat L = T(rot, buffer.second);
 			P *= L.inv();
-			Tanpa.push_back(P);
-			GLOBAL_P *= L.inv();
-			Mat GLOBAL_P_INV = GLOBAL_P.inv();
-			std::vector<double> vector = Transform_vec(GLOBAL_P_INV);
+			std::vector<double> vector = Transform_vec(P.inv());
 			T_i.push_back(vector);
 		}
 		ceres::Problem problem;
@@ -145,18 +140,12 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 		ceres::Solve(options, &problem, &summary);
 		for (int i = 0; i < crt.size(); ++i)
 		{
-			Mat ofi = FromPointerToMat(crt[i]);
-			ofi = ofi.inv();
-			in << ofi.at<float>(0,3) + GX << " " << ofi.at<float>(1, 3) + GY << " " << ofi.at<float>(2, 3) + GZ << "\n";
-			if (i == crt.size() - 1)
-			{
-				GX += ofi.at<float>(0,3);
-				GY += ofi.at<float>(1, 3);
-				GZ += ofi.at<float>(2, 3);
-			}
+			Mat copy_GLOBAL = GLOBAL_P.clone();
+			copy_GLOBAL *= FromPointerToMat(crt[i]).inv();
+			in << copy_GLOBAL.at<float>(0, 3) << " " << copy_GLOBAL.at<float>(1, 3) << " " << copy_GLOBAL.at<float>(2, 3) << "\n";
+			if (i = crt.size() - 1)
+				GLOBAL_P *= FromPointerToMat(crt[i]).inv();
 		}
-
-		std::cout << GZ << std::endl;
 
 		for (auto& p : crt)
 			delete[] p;
