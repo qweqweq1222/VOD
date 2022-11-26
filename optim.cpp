@@ -1,4 +1,5 @@
 #include "lib.h"
+#include <opencv2/imgcodecs.hpp>
 
 
 Mat FromPointerToMat(double* pt)
@@ -47,12 +48,12 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 		for (int jdx = 0; jdx < vec.size() - 1; ++jdx)
 		{
 
-			std::pair<Mat, Mat> buffer = EstimateMotion(imread((*left_iterator).path().u8string()),
-				imread((*right_iterator).path().u8string()),
-				imread((*next_iterator).path().u8string()), PLeft, PRight);
+			std::pair<Mat, Mat> buffer = EstimateMotion(imread((*left_iterator).path().string()),
+				imread((*right_iterator).path().string()),
+				imread((*next_iterator).path().string()), PLeft, PRight);
 			if (jdx == 0)
 			{
-				Mat disparity = CalculateDisparity(imread((*left_iterator).path().u8string()), imread((*next_iterator).path().u8string()));
+				Mat disparity = CalculateDisparity(imread((*left_iterator).path().string()), imread((*next_iterator).path().string()));
 				float coeff = cil.cameraMatrix.at<float>(0, 0) * (cir.transVector.at<float>(0) - cil.transVector.at<float>(0));
 
 				for (auto& pt : vec[0]) {
