@@ -7,10 +7,10 @@ int main(void) {
 	Mat P_left(3, 4, cv::DataType<float>::type, P0);
 	Mat P_right(3, 4, cv::DataType<float>::type, P1);
 	std::vector<int> dynamic_classes = {8,9,10};
-	std::string folder_left = "C:/Users/Andrey/Desktop/Data/lil_dataset/00/image_0/";
-	std::string folder_right = "C:/Users/Andrey/Desktop/Data/lil_dataset/00/image_1";
-	std::string segment_folder = "C:/Users/Andrey/Desktop/Data/lil_dataset/00/segment/dataset";
-	std::string input  = "C:/Users/Andrey/Desktop/Data/optimized_results.txt";
+	std::string folder_left = "../lil_dataset/00/image_0/";
+	std::string folder_right = "../lil_dataset/00/image_1";
+	std::string segment_folder = "../lil_dataset/00/segment/dataset";
+	std::string input  = "optimized_results.txt";
 	//VisualNoDynamic(folder_left, segment_folder, folder_right, input, P_left, P_right, dynamic_classes);
 	EstimateAndOptimize(folder_left, folder_right, input, P_left, P_right);
 	return 0;

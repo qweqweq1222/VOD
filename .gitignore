@@ -1,5 +1,7 @@
 build
 bin*/*
+lil_dataset
+
 
 *.swp
 *.DS_Store
