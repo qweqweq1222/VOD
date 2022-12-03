@@ -24,7 +24,7 @@ using namespace std;
 const int MAX_FEATURES = 500;
 const int MIN_FEATURES = 10;
 const float GOOD_MATCH_PERCENT = 0.7f;
-const float DEPTH_TRASH = 3000.0f;
+const float DEPTH_TRASH = 300.0f;
 const int SAME_POINTS = 30;
 const int NUM_OF_FRAMES = 500;
 const int LOCAL_TRASH = 2;
@@ -58,14 +58,33 @@ struct SnavelyReprojectionError {
 		T* residuals) const {
 
 		T P3[3];
-		P3[0] = T(cos(alpha_t[0])) * (point3d[0] - alpha_t[1]) + T(-sin(alpha_t[0])) * (point3d[2] - alpha_t[3]);
-		P3[1] = point3d[1] - alpha_t[2];
-		P3[2] = T(sin(alpha_t[0])) * (point3d[0] - alpha_t[1]) + T(cos(alpha_t[0])) * (point3d[2] - alpha_t[3]);
+		T a = alpha_t[0];
+		T b = alpha_t[1];
+		T g = alpha_t[2];
+		T dx = point3d[0] - alpha_t[3];
+		T dy = point3d[1] - alpha_t[4];
+		T dz = point3d[2] - alpha_t[5];
+		P3[0] = T(cos(b) * cos(g)) * dx + T(sin(a) * sin(b)*cos(g) + sin(g) * cos(a)) * dy + T(sin(a)*sin(g) - sin(b)*cos(a)*cos(g)) * dz;
+		P3[1] = T(-sin(g) * cos(b)) * dx + T(cos(a) * cos(g) - sin(a) * sin(b) * sin(g)) * dy + T(sin(a) * cos(g) + sin(b) * sin(g) * cos(a)) * dz;
+		P3[2] = T(sin(b)) * dx + T(-sin(a) * cos(b)) * dy + T(cos(a) * cos(b)) * dz;
 		T predicted_x = fx * P3[0] / P3[2] + cx;
 		T predicted_y = fy * P3[1] / P3[2] + cy;
-		residuals[0] = (predicted_x - T(observed_x)) / T(100000);
-		residuals[1] = (predicted_y - T(observed_y)) / T(100000);
-		residuals[2] = T(100) * alpha_t[2];
+		T regulx = alpha_t[3];
+		T reguly = alpha_t[4];
+		T regulz = alpha_t[5];
+		
+		residuals[0] = (predicted_x - T(observed_x)); 
+		residuals[1] = (predicted_y - T(observed_y));
+		//residuals[2] = alpha_t[0];
+		//residuals[3] = alpha_t[1];
+		//residuals[4] = alpha_t[2];
+		//residuals[5] = alpha_t[3];
+		residuals[2] = alpha_t[4] * T(100);
+		//residuals[7] = alpha_t[5];
+		//residuals[8] = point3d[0];
+		//residuals[9] = point3d[1];
+		//residuals[10] = point3d[2];
+
 		//std::cout << "observed_x: " << observed_x << " observed_y: " << observed_y << endl;
 		//std::cout << "predicted_x: " << predicted_x << " predicted_y: " << predicted_y << endl;
 		//std::cout << "-----------------------\n";
@@ -73,7 +92,7 @@ struct SnavelyReprojectionError {
 	}
 	static ceres::CostFunction* Create(const double observed_x,
 		const double observed_y,/* Mat Ti, Point3f pt3d,*/ const double fx, const double fy, const double cx, const double cy) {
-		return (new ceres::AutoDiffCostFunction<SnavelyReprojectionError, 3, 4, 3>(
+		return (new ceres::AutoDiffCostFunction<SnavelyReprojectionError, 3, 6, 3>(
 			new SnavelyReprojectionError(observed_x, observed_y, /*Ti, pt3d,*/ fx, fy, cx, cy)));
 	}
 	
