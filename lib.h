@@ -78,8 +78,8 @@ struct SnavelyReprojectionError {
 		//T predicted_x = T(fx) * P3[0] / P3[2] + T(cx);
 		//T predicted_y = T(fy) * P3[1] / P3[2] + T(cy);
 		
-		residuals[0] = (predicted_x - T(observed_x)) / T(1000); 
-		residuals[1] = (predicted_y - T(observed_y)) / T(1000);
+		residuals[0] = abs(predicted_x - T(observed_x)) + abs(reguly); 
+		residuals[1] = abs(predicted_y - T(observed_y)) + abs(reguly);
 		//residuals[0] = reguly;
 		//residuals[3] = point3d[0] / T(10000000);
 		//residuals[4] = point3d[1] / T(10000000);
