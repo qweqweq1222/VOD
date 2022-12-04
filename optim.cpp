@@ -169,8 +169,8 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 				}
 
 				return;
-			}
-			*/
+			}*/
+			
 
 
 
@@ -228,6 +228,7 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 					P3[2] = (sin(b)) * dx + (-sin(a) * cos(b)) * dy + (cos(a) * cos(b)) * dz;
 					double predicted_x = PLeft.at<float>(0, 0) * P3[0] / P3[2] + PLeft.at<float>(0, 2);
 					double predicted_y = PLeft.at<float>(0, 0) * P3[1] / P3[2] + PLeft.at<float>(1, 2);
+					//cout << "{" << predicted_x << "," << predicted_y << "},{" << alternative[i + 1][j].pt.y << "," << alternative[i + 1][j].pt.x << "}\n";
 					/*
 					double dx = pts_3d[j][0] - alphas_trans_[i][1];
 					double dy = pts_3d[j][1] - alphas_trans_[i][2];
@@ -239,7 +240,10 @@ void EstimateAndOptimize(const std::string& left_path, const std::string& right_
 					double predicted_x = PLeft.at<float>(0, 0) * P3[0] / P3[2] + PLeft.at<float>(0, 2);
 					double predicted_y = PLeft.at<float>(0, 0) * P3[1] / P3[2] + PLeft.at<float>(1, 2);
 					*/
-					if (abs(predicted_x - alternative[i + 1][j].pt.y) < 100 && abs(predicted_y - alternative[i + 1][j].pt.x) < 100)
+					bool positive = predicted_x >= 0 && predicted_y >= 0;
+					bool diff = abs(predicted_x - alternative[i + 1][j].pt.y) < 50 && abs(predicted_y - alternative[i + 1][j].pt.x) < 50;
+					bool condition = positive && diff;
+					if (condition)
 					{
 						ceres::CostFunction* cost_function = SnavelyReprojectionError::Create(double(alternative[i + 1][j].pt.y), double(alternative[i + 1][j].pt.x),
 								PLeft.at<float>(0, 0), PLeft.at<float>(0, 0), PLeft.at<float>(0, 2), PLeft.at<float>(1, 2));
